@@ -29,6 +29,12 @@ const handColorsHighlighted = {
     paper: "rgba(127, 191, 127, 0)",
     scissors: "rgba(127, 127, 191, 0)",
 };
+
+const handEmojis = {
+    rock: "👊",
+    paper: "✋",
+    scissors: "✌️"
+};
   
 let grid = getInitialGrid();
 let score = 0;
@@ -162,7 +168,7 @@ function render() {
                 }
             }
             cellElem.addEventListener("click", () => handleClick(row, col));
-            cellElem.innerHTML = cell.hand.charAt(0).toUpperCase() + (cell.durability > 1 ? `(${cell.durability})` : "")
+            cellElem.innerHTML = handEmojis[cell.hand] + (cell.durability > 1 ? `(${cell.durability})` : "")
             gridElem.appendChild(cellElem);
             cell.elem = cellElem;
         }
