@@ -6,6 +6,7 @@ const INITIAL_DURABILITY = 1;
 const ANIM_TIME = 0.5;
 
 const getRandomHand = () => HANDS[Math.floor(Math.random() * HANDS.length)];
+const getRandomDurability = () => Math.random() < 0.1 ? 2 : INITIAL_DURABILITY;
 
 const getInitialGrid = () =>
   Array.from({ length: SIZE }, () =>
@@ -22,6 +23,12 @@ const handColors = {
   rock: "#7f3f3f",
   paper: "#3f7f3f",
   scissors: "#3f3f7f",
+};
+
+const handColorsDurable = {
+    rock: "#4f2f2f",
+    paper: "#2f4f2f",
+    scissors: "#2f2f4f",
 };
 
 const handColorsHighlighted = {
@@ -42,6 +49,7 @@ let erasing = [];
 let toErase = [];
 
 function handleClick(row, col) {
+    if (toErase.length) return; // Previous erasure is ongoing
     const cell = grid[row][col];
     const hand = cell.hand;
     const target = beats[hand];
@@ -52,24 +60,39 @@ function handleClick(row, col) {
       [0, 1],
     ];
 
+    const setFlashing = cell => {
+        const cellElem = cell.elem;
+        cellElem.style.transition = "";
+        cellElem.style.backgroundColor = "#cf0000";
+        if (1 < cell.durability) {
+            cellElem.style.border = "3px solid red";
+        }
+        // Set timeout immediately to show flashing
+        setTimeout(() => {
+            if (1 < cell.durability) {
+                cellElem.style.transition = `border ${ANIM_TIME}s, background ${ANIM_TIME}s`;
+                cellElem.style.border = "3px solid gray";
+                cellElem.style.backgroundColor = handColorsDurable[cell.hand];
+            }
+            else {
+                cellElem.style.transition = `background ${ANIM_TIME}s`;
+                cellElem.style.backgroundColor = handColors[cell.hand];
+            }
+        });
+    };
+
+    if (1 < cell.durability) {
+        setFlashing(cell);
+        return;
+    }
+
     const surroundingTargets = directions.filter(([dr, dc]) => {
       const nr = row + dr;
       const nc = col + dc;
-      return nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && grid[nr][nc].hand === target;
+      return nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && grid[nr][nc].hand === target && grid[nr][nc].durability <= 1;
     });
 
     if (surroundingTargets.length < 2) {
-        const setFlashing = cell => {
-            const cellElem = cell.elem;
-            cellElem.style.transition = "";
-            cellElem.style.backgroundColor = "#af0000";
-            // Set timeout immediately to show flashing
-            setTimeout(() => {
-                cellElem.style.transition = `background ${ANIM_TIME}s`;
-                cellElem.style.backgroundColor = handColors[cell.hand];
-            });
-        };
-
         setFlashing(cell);
 
         for (let [dr, dc] of surroundingTargets) {
@@ -104,8 +127,15 @@ function handleClick(row, col) {
     for (let cid of toErase) {
         const erasingCell = grid[cid[0]][cid[1]];
         const cellElem = erasingCell.elem;
-        cellElem.style.transition = `background ${ANIM_TIME}s`;
-        cellElem.style.backgroundColor = handColorsHighlighted[erasingCell.hand];
+        if (1 < erasingCell.durability) {
+            cellElem.style.transition = `border ${ANIM_TIME}s, background ${ANIM_TIME}s`;
+            cellElem.style.border = "3px solid #ffffff";
+            cellElem.style.backgroundColor = handColors[erasingCell.hand];
+        }
+        else {
+            cellElem.style.transition = `background ${ANIM_TIME}s`;
+            cellElem.style.backgroundColor = handColorsHighlighted[erasingCell.hand];
+        }
     }
 
     setTimeout(() => {
@@ -115,10 +145,14 @@ function handleClick(row, col) {
       newGrid[row][col].durability += 1;
 
       toErase.forEach(([r, c]) => {
+        if (1 < grid[r][c].durability) {
+            newGrid[r][c].durability--;
+            return;
+        }
         for (let i = r; i > 0; i--) {
           newGrid[i][c] = { ...newGrid[i - 1][c] };
         }
-        newGrid[0][c] = { hand: getRandomHand(), durability: INITIAL_DURABILITY };
+        newGrid[0][c] = { hand: getRandomHand(), durability: getRandomDurability() };
       });
 
       score += toErase.length;
@@ -178,15 +212,13 @@ function render() {
             cellElem.style.textAlign = "center";
             cellElem.style.verticalAlign = "middle";
             cellElem.style.color = "white";
-            for (let i = 0; i < toErase.length; i++) {
-                if (toErase[i][0] === row && toErase[i][1] === col) {
-                    cellElem.style.transition = `background ${ANIM_TIME}s`;
-                    cellElem.style.backgroundColor = handColorsHighlighted[cell.hand];
-                    break;
-                }
+            if(cell.durability > 1) {
+                cellElem.style.backgroundColor = handColorsDurable[cell.hand];
+                cellElem.style.margin = "-3px";
+                cellElem.style.border = "3px solid gray";
             }
             cellElem.addEventListener("click", () => handleClick(row, col));
-            cellElem.innerHTML = handEmojis[cell.hand] + (cell.durability > 1 ? `(${cell.durability})` : "")
+            cellElem.innerHTML = handEmojis[cell.hand]
             gridElem.appendChild(cellElem);
             cell.elem = cellElem;
         }
