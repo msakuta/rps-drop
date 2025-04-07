@@ -59,16 +59,22 @@ function handleClick(row, col) {
     });
 
     if (surroundingTargets.length < 2) {
-        for (let [dr, dc] of surroundingTargets) {
-            const [nr, nc] = [row + dr, col + dc];
-            const cellElem = grid[nr][nc].elem;
+        const setFlashing = cell => {
+            const cellElem = cell.elem;
             cellElem.style.transition = "";
             cellElem.style.backgroundColor = "#af0000";
             // Set timeout immediately to show flashing
             setTimeout(() => {
                 cellElem.style.transition = `background ${ANIM_TIME}s`;
-                cellElem.style.backgroundColor = handColors[grid[nr][nc].hand];
+                cellElem.style.backgroundColor = handColors[cell.hand];
             });
+        };
+
+        setFlashing(cell);
+
+        for (let [dr, dc] of surroundingTargets) {
+            const [nr, nc] = [row + dr, col + dc];
+            setFlashing(grid[nr][nc]);
         }
         return;
     }
