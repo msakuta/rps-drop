@@ -25,9 +25,9 @@ const handColors = {
 };
 
 const handColorsHighlighted = {
-    rock: "#bf7f7f",
-    paper: "#7fbf7f",
-    scissors: "#7f7fbf",
+    rock: "rgba(191, 127, 127, 0)",
+    paper: "rgba(127, 191, 127, 0)",
+    scissors: "rgba(127, 127, 191, 0)",
 };
   
 let grid = getInitialGrid();
@@ -79,8 +79,8 @@ function handleClick(row, col) {
     for (let cid of toErase) {
         const erasingCell = grid[cid[0]][cid[1]];
         const cellElem = erasingCell.elem;
+        cellElem.style.transition = `background ${ANIM_TIME}s`;
         cellElem.style.backgroundColor = handColorsHighlighted[erasingCell.hand];
-        cellElem.style.animation = `${ANIM_TIME}s ease-out 0s infinite eraseStart`;
     }
 
     setTimeout(() => {
@@ -156,8 +156,8 @@ function render() {
             cellElem.style.color = "white";
             for (let i = 0; i < toErase.length; i++) {
                 if (toErase[i][0] === row && toErase[i][1] === col) {
+                    cellElem.style.transition = `background ${ANIM_TIME}s`;
                     cellElem.style.backgroundColor = handColorsHighlighted[cell.hand];
-                    cellElem.style.animation = `${ANIM_TIME}s ease-out 0s infinite eraseStart`;
                     break;
                 }
             }
