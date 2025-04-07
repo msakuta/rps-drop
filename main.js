@@ -6,7 +6,7 @@ const INITIAL_DURABILITY = 1;
 const ANIM_TIME = 0.5;
 
 const getRandomHand = () => HANDS[Math.floor(Math.random() * HANDS.length)];
-const getRandomDurability = () => Math.random() < 0.1 ? 2 : INITIAL_DURABILITY;
+const getRandomDurability = () => Math.random() < 0.5 / (1. + 1000 / score) ? 2 : INITIAL_DURABILITY;
 
 const getInitialGrid = () =>
   Array.from({ length: SIZE }, () =>
