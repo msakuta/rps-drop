@@ -170,10 +170,10 @@ function render() {
             const cellElem = document.createElement("div");
             cellElem.className="noselect";
             cellElem.style.position = "absolute";
-            cellElem.style.left = `${col * 40}px`;
-            cellElem.style.top = `${row * 40}px`;
-            cellElem.style.width = '35px';
-            cellElem.style.height = '35px';
+            cellElem.style.left = `${col * 50}px`;
+            cellElem.style.top = `${row * 50}px`;
+            cellElem.style.width = '40px';
+            cellElem.style.height = '40px';
             cellElem.style.backgroundColor = handColors[cell.hand];
             cellElem.style.textAlign = "center";
             cellElem.style.verticalAlign = "middle";
