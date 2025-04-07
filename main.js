@@ -168,8 +168,7 @@ function render() {
         for (let col = 0; col < SIZE; col++) {
             const cell = grid[row][col];
             const cellElem = document.createElement("div");
-            cellElem.className="grid grid-cols-10 gap-1 w-[min(100vw,theme(width.96))] mx-auto";
-            cellElem.className+="relative w-full pt-[100%]";
+            cellElem.className="noselect";
             cellElem.style.position = "absolute";
             cellElem.style.left = `${col * 40}px`;
             cellElem.style.top = `${row * 40}px`;
