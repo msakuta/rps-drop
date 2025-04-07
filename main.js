@@ -155,7 +155,8 @@ function handleClick(row, col) {
         newGrid[0][c] = { hand: getRandomHand(), durability: getRandomDurability() };
       });
 
-      score += toErase.length;
+      // Reward longer chains
+      score += toErase.length * (toErase.length + 1) / 2;
       grid = newGrid;
       erasing = [];
       toErase = [];
