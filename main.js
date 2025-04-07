@@ -58,7 +58,20 @@ function handleClick(row, col) {
       return nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && grid[nr][nc].hand === target;
     });
 
-    if (surroundingTargets.length < 2) return;
+    if (surroundingTargets.length < 2) {
+        for (let [dr, dc] of surroundingTargets) {
+            const [nr, nc] = [row + dr, col + dc];
+            const cellElem = grid[nr][nc].elem;
+            cellElem.style.transition = "";
+            cellElem.style.backgroundColor = "#af0000";
+            // Set timeout immediately to show flashing
+            setTimeout(() => {
+                cellElem.style.transition = `background ${ANIM_TIME}s`;
+                cellElem.style.backgroundColor = handColors[grid[nr][nc].hand];
+            });
+        }
+        return;
+    }
 
     const visited = Array.from({ length: SIZE }, () => Array(SIZE).fill(false));
 
