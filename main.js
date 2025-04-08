@@ -48,17 +48,18 @@ let score = 0;
 let erasing = [];
 let toErase = [];
 
+const directions = [
+    [-1, 0],
+    [1, 0],
+    [0, -1],
+    [0, 1],
+  ];
+
 function handleClick(row, col) {
     if (toErase.length) return; // Previous erasure is ongoing
     const cell = grid[row][col];
     const hand = cell.hand;
     const target = beats[hand];
-    const directions = [
-      [-1, 0],
-      [1, 0],
-      [0, -1],
-      [0, 1],
-    ];
 
     const setFlashing = cell => {
         const cellElem = cell.elem;
@@ -160,6 +161,7 @@ function handleClick(row, col) {
       grid = newGrid;
       erasing = [];
       toErase = [];
+      gameOver = checkGameOver();
       render();
     }, ANIM_TIME * 1000.);
 
@@ -168,18 +170,15 @@ function handleClick(row, col) {
 function checkGameOver() {
     for (let r = 0; r < SIZE; r++) {
       for (let c = 0; c < SIZE; c++) {
-        const { hand } = grid[r][c];
-        const target = beats[hand];
-        const directions = [
-          [-1, 0],
-          [1, 0],
-          [0, -1],
-          [0, 1],
-        ];
+        const cell = grid[r][c];
+        if (1 < cell.durability) continue;
+        const target = beats[cell.hand];
         const surroundingTargets = directions.filter(([dr, dc]) => {
           const nr = r + dr;
           const nc = c + dc;
-          return nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE && grid[nr][nc].hand === target;
+          if (!(nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE)) return false;
+          const adjacentCell = grid[nr][nc];
+          return adjacentCell.hand === target && adjacentCell.durability <= 1;
         });
         if (surroundingTargets.length >= 2) {
           return false;
@@ -189,13 +188,16 @@ function checkGameOver() {
     return true;
 }
 
-const gameOver = checkGameOver();
+let gameOver = checkGameOver();
 
 const gridElem = document.getElementById("grid");
 const scoreElem = document.getElementById("score");
+const gameOverElem = document.getElementById("gameOver");
 
 function render() {
     scoreElem.innerHTML = score;
+
+    gameOverElem.style.display = gameOver ? "block" : "none";
 
     while(gridElem.firstChild) gridElem.removeChild(gridElem.firstChild);
 
@@ -227,3 +229,10 @@ function render() {
 }
 
 window.addEventListener("load", render);
+
+document.getElementById("restart").addEventListener("click", () => {
+    grid = getInitialGrid();
+    score = 0;
+    gameOver = checkGameOver();
+    render();
+})
