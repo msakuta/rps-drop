@@ -230,9 +230,11 @@ function render() {
 
 window.addEventListener("load", render);
 
-document.getElementById("restart").addEventListener("click", () => {
-    grid = getInitialGrid();
-    score = 0;
-    gameOver = checkGameOver();
-    render();
-})
+for (let id of ["restart", "restartOutside"]) {
+    document.getElementById(id).addEventListener("click", () => {
+        grid = getInitialGrid();
+        score = 0;
+        gameOver = checkGameOver();
+        render();
+    });
+}
