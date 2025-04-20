@@ -1,6 +1,6 @@
 'use strict'
 
-const SIZE = 10;
+const SIZE = 8;
 const HANDS = ["rock", "paper", "scissors"];
 const INITIAL_DURABILITY = 1;
 const ANIM_TIME = 0.5;
