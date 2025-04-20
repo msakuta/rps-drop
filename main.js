@@ -25,11 +25,7 @@ const handColors = {
   scissors: "#3f3f7f",
 };
 
-const handColorsDurable = {
-    rock: "#4f2f2f",
-    paper: "#2f4f2f",
-    scissors: "#2f2f4f",
-};
+const handColorDurable = "#2f2f2f";
 
 const handColorsHighlighted = {
     rock: "rgba(191, 127, 127, 0)",
@@ -73,7 +69,7 @@ function handleClick(row, col) {
             if (1 < cell.durability) {
                 cellElem.style.transition = `border ${ANIM_TIME}s, background ${ANIM_TIME}s`;
                 cellElem.style.border = "3px solid gray";
-                cellElem.style.backgroundColor = handColorsDurable[cell.hand];
+                cellElem.style.backgroundColor = handColorDurable;
             }
             else {
                 cellElem.style.transition = `background ${ANIM_TIME}s`;
@@ -112,6 +108,7 @@ function handleClick(row, col) {
         r >= SIZE ||
         c >= SIZE ||
         visited[r][c] ||
+        grid[r][c].durability <= 1 &&
         grid[r][c].hand !== target
       )
         return;
@@ -216,12 +213,14 @@ function render() {
             cellElem.style.verticalAlign = "middle";
             cellElem.style.color = "white";
             if(cell.durability > 1) {
-                cellElem.style.backgroundColor = handColorsDurable[cell.hand];
+                cellElem.style.backgroundColor = handColorDurable;
                 cellElem.style.margin = "-3px";
                 cellElem.style.border = "3px solid gray";
             }
+            else {
+                cellElem.innerHTML = handEmojis[cell.hand]
+            }
             cellElem.addEventListener("click", () => handleClick(row, col));
-            cellElem.innerHTML = handEmojis[cell.hand]
             gridElem.appendChild(cellElem);
             cell.elem = cellElem;
         }
