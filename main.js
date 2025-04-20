@@ -107,12 +107,17 @@ function handleClick(row, col) {
         c < 0 ||
         r >= SIZE ||
         c >= SIZE ||
-        visited[r][c] ||
-        grid[r][c].durability <= 1 &&
-        grid[r][c].hand !== target
+        visited[r][c]
       )
         return;
       visited[r][c] = true;
+      // If the cell is durable, it won't allow erasure to propagate, but itself will have
+      // reduced durability.
+      if (1 < grid[r][c].durability) {
+        toErase.push([r, c]);
+        return;
+      }
+      if (grid[r][c].hand !== target) return;
       toErase.push([r, c]);
       dfs(r - 1, c);
       dfs(r + 1, c);
